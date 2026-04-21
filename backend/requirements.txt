@@ -1,0 +1,11 @@
+Django==5.2.1
+djangorestframework==3.17.1
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.9.0
+drf-spectacular==0.29.0
+django-filter==25.2
+django-oauth-toolkit==3.1.0
+Pillow==12.2.0
+django-storages==1.14.6
+boto3==1.42.92
+bleach==6.3.0

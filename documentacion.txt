@@ -1,0 +1,82 @@
+Listo. Quedó integrada la triple solicitud: OAuth2 real con django-oauth-toolkit, frontend React conectado al backend con variables de entorno, y seeds + tests automáticos de API funcionando.
+
+Cambios principales
+
+OAuth2 real en backend (django-oauth-toolkit)
+Activado en settings.py
+Rutas OAuth2 expuestas en urls.py bajo:
+/api/v1/oauth/authorize/
+/api/v1/oauth/token/
+/api/v1/oauth/revoke_token/
+Dependencia agregada en requirements.txt
+Variables OAuth añadidas en .env.example
+Frontend React conectado al backend + flujo OAuth2 PKCE real
+Servicio PKCE y canje de código:
+oauth.js
+Integración en contexto de auth:
+AuthContext.jsx
+Nuevo método loginWithOAuth
+Persistencia de provider jwt/oauth para refresh correcto
+Refresh compatible JWT y OAuth2:
+api.js
+Login portal conectado a OAuth real (sin placeholders):
+PortalLogin.jsx
+Nueva pantalla callback OAuth:
+PortalOAuthCallback.jsx
+Ruta añadida:
+App.jsx en /portal/oauth/callback
+Ajuste de entorno frontend:
+.env.example
+.env
+Seeds iniciales
+Comando de seed creado en:
+seed_initial_data.py
+Crea/actualiza:
+Usuarios demo
+Proveedores
+Productos
+Recepciones con trazabilidad
+Aplicación OAuth2 pública (Authorization Code + PKCE)
+Tests automáticos API
+Tests de auth/usuarios/OAuth:
+tests.py
+Tests de inventario/permisos/recepciones:
+tests.py
+Resultado validado: 9 tests OK
+Resultado de validación ejecutada
+
+Migraciones aplicadas correctamente, incluyendo oauth2_provider.
+Seed ejecutado correctamente.
+Tests pasando: 9 OK.
+Client ID OAuth generado por seed:
+Uja4emdpvAWGoI9RWXKCV12uRzTX6DhSAzbcJayo
+Ya quedó inyectado en .env .
+Cómo levantar
+
+Backend
+
+cd C:/Projecto/SistemaInventarioFronted/backend
+python.exe manage.py runserver 8000
+Frontend
+
+cd C:/Projecto/SistemaInventarioFronted
+npm install
+npm run dev
+Notas importantes
+
+El flujo OAuth integrado es Authorization Code + PKCE contra tu propio servidor Django OAuth2.
+Los botones Google/Microsoft fueron reemplazados por inicio OAuth2 real (no social login externo). Si quieres, el siguiente paso es integrar Google/Microsoft reales sobre este backbone OAuth.
+El archivo .env de frontend ya apunta directo a http://localhost:8000/api/v1.
+
+
+El usuario admin es:
+
+Email: admin@empresa.com
+Contraseña: Admin1234!
+
+Puedes usarlo para iniciar sesión en la aplicación (tanto a través de la API como en el portal).
+
+También hay otros dos usuarios de demostración:
+
+Operador: operador@empresa.com / Operador1234!
+Cliente Demo: cliente@demo.com / Cliente1234!

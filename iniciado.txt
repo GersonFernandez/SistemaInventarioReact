@@ -1,0 +1,29 @@
+🎉 ¡PROYECTO COMPLETAMENTE INICIADO!
+
+✅ BACKEND - ACTIVO
+URL: http://localhost:8000
+Estado: Corriendo
+Base de datos: Inicializada
+Datos de prueba: Cargados
+Credenciales de test:
+
+Admin: admin@empresa.com / Admin1234!
+Operador: operador@empresa.com / Operador1234!
+Cliente: cliente@demo.com / Cliente1234!
+✅ FRONTEND - ACTIVO
+URL: http://localhost:5173
+Estado: Corriendo (Vite dev server)
+Dependencias: Instaladas (349 paquetes)
+Puerto: 5173
+📋 ACCESO A LA APLICACIÓN
+Abre tu navegador en: http://localhost:5173
+Usa las credenciales anteriores para login
+API REST disponible en: http://localhost:8000/api/v1/
+Documentación Swagger: http://localhost:8000/api/schema/swagger/
+🎯 ARQUITECTURA ACTIVA
+✅ Django REST Backend + React Frontend
+✅ Autenticación JWT + OAuth2 PKCE
+✅ Base de datos SQLite con migraciones
+✅ APIs CRUD completas (productos, proveedores, usuarios)
+✅ Control de roles y permisos
+✅ Almacenamiento de imágenes
