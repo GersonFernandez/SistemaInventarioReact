@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { productService } from '../../services'
 import { LoadingScreen, EmptyState, ConfirmDialog, Pagination, StatusBadge } from '../../components/ui/Shared'
@@ -12,17 +12,19 @@ const EMPTY_FORM = {
 
 const MAX_IMAGE_SIZE_MB = 5
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const NEW_CATEGORY_OPTION = '__new__'
 
 export default function Products() {
   const { hasRole } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts]   = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading]     = useState(true)
-  const [search, setSearch]       = useState('')
-  const [page, setPage]           = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [showModal, setShowModal]   = useState(false)
   const [editing, setEditing]       = useState(null)
   const [form, setForm]             = useState(EMPTY_FORM)
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false)
   const [saving, setSaving]         = useState(false)
   const [deleteId, setDeleteId]     = useState(null)
   const [imgFile, setImgFile]       = useState(null)
@@ -30,11 +32,54 @@ export default function Products() {
   const fileRef = useRef()
 
   const canEdit = hasRole('admin', 'operador')
+  const search = searchParams.get('search') || ''
+  const category = searchParams.get('category') || ''
+  const status = searchParams.get('status') || ''
+  const minPrice = searchParams.get('min_price') || ''
+  const maxPrice = searchParams.get('max_price') || ''
+  const page = Math.max(Number(searchParams.get('page') || 1), 1)
+  const modalCategoryOptions = Array.from(new Set([...(categories || []), form.category].filter(Boolean)))
+    .sort((left, right) => left.localeCompare(right))
+
+  function setParam(key, value, resetPage = true) {
+    const next = new URLSearchParams(searchParams)
+    if (value) next.set(key, value)
+    else next.delete(key)
+    if (resetPage && key !== 'page') {
+      next.set('page', '1')
+    }
+    setSearchParams(next)
+  }
+
+  async function loadCategories() {
+    try {
+      const { data } = await productService.list({ page_size: 1000, ordering: 'category' })
+      const results = data.results || data
+      const options = Array.from(new Set(
+        results
+          .map(product => product.category?.trim())
+          .filter(Boolean)
+      )).sort((left, right) => left.localeCompare(right))
+      setCategories(options)
+    } catch {
+      const fallbackOptions = Array.from(new Set(
+        DEMO_PRODUCTS
+          .map(product => product.category?.trim())
+          .filter(Boolean)
+      )).sort((left, right) => left.localeCompare(right))
+      setCategories(fallbackOptions)
+    }
+  }
 
   async function load(pg = 1) {
     setLoading(true)
     try {
-      const { data } = await productService.list({ page: pg, search, page_size: 10 })
+      const params = { page: pg, search, page_size: 10 }
+      if (category) params.category = category
+      if (status) params.is_active = status === 'active'
+      if (minPrice) params.price__gte = minPrice
+      if (maxPrice) params.price__lte = maxPrice
+      const { data } = await productService.list(params)
       setProducts(data.results || data)
       setTotalPages(Math.ceil((data.count || (data.results || data).length) / 10))
     } catch {
@@ -46,15 +91,16 @@ export default function Products() {
     }
   }
 
-  useEffect(() => { load(page) }, [page])
+  useEffect(() => { loadCategories() }, [])
+  useEffect(() => { load(page) }, [page, search, category, status, minPrice, maxPrice])
 
   function openCreate() {
-    setEditing(null); setForm(EMPTY_FORM); setImgFile(null); setImgPreview(null); setShowModal(true)
+    setEditing(null); setForm(EMPTY_FORM); setIsCreatingCategory(false); setImgFile(null); setImgPreview(null); setShowModal(true)
   }
   function openEdit(p) {
-    setEditing(p); setForm({ ...p }); setImgPreview(p.image_url || null); setImgFile(null); setShowModal(true)
+    setEditing(p); setForm({ ...p }); setIsCreatingCategory(false); setImgPreview(p.image_url || null); setImgFile(null); setShowModal(true)
   }
-  function closeModal() { setShowModal(false); setEditing(null); setForm(EMPTY_FORM); setImgFile(null); setImgPreview(null) }
+  function closeModal() { setShowModal(false); setEditing(null); setForm(EMPTY_FORM); setIsCreatingCategory(false); setImgFile(null); setImgPreview(null) }
 
   function handleImgChange(e) {
     const file = e.target.files[0]
@@ -73,6 +119,7 @@ export default function Products() {
     e.preventDefault()
     if (!form.name.trim()) { toast.error('El nombre es requerido'); return }
     if (!form.sku.trim())  { toast.error('El SKU es requerido'); return }
+    if (isCreatingCategory && !form.category.trim()) { toast.error('La categoría es requerida'); return }
     if (isNaN(parseFloat(form.price)) || parseFloat(form.price) < 0) { toast.error('Precio inválido'); return }
     setSaving(true)
     try {
@@ -133,14 +180,55 @@ export default function Products() {
 
       {/* Search */}
       <div className="card mb-4">
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col lg:flex-row gap-3">
           <input
             className="input flex-1"
             placeholder="Buscar por nombre o SKU..."
             value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1) }}
+            onChange={e => setParam('search', e.target.value)}
           />
-          <button className="btn-secondary" onClick={() => load(1)}>🔍 Buscar</button>
+          <select
+            className="input w-full lg:w-44"
+            value={category}
+            onChange={e => setParam('category', e.target.value)}
+          >
+            <option value="">Todas las categorías</option>
+            {categories.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+          <select
+            className="input w-full lg:w-40"
+            value={status}
+            onChange={e => setParam('status', e.target.value)}
+          >
+            <option value="">Todos</option>
+            <option value="active">Activos</option>
+            <option value="inactive">Inactivos</option>
+          </select>
+          <input
+            className="input w-full lg:w-36"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Precio mín"
+            value={minPrice}
+            onChange={e => setParam('min_price', e.target.value)}
+          />
+          <input
+            className="input w-full lg:w-36"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Precio máx"
+            value={maxPrice}
+            onChange={e => setParam('max_price', e.target.value)}
+          />
+          <button className="btn-secondary" onClick={() => setParam('page', '1', false)}>🔍 Buscar</button>
+          <button
+            className="btn-outline"
+            onClick={() => setSearchParams({})}
+          >Limpiar</button>
         </div>
       </div>
 
@@ -191,7 +279,7 @@ export default function Products() {
         </div>
       )}
 
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+      <Pagination page={page} totalPages={totalPages} onPageChange={nextPage => setParam('page', String(nextPage), false)} />
 
       {/* Create/Edit Modal */}
       {showModal && (
@@ -242,7 +330,33 @@ export default function Products() {
                   </div>
                   <div>
                     <label className="label">Categoría</label>
-                    <input className="input" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} placeholder="Electrónica, Ropa..." />
+                    <select
+                      className="input"
+                      value={isCreatingCategory ? NEW_CATEGORY_OPTION : (form.category || '')}
+                      onChange={e => {
+                        if (e.target.value === NEW_CATEGORY_OPTION) {
+                          setIsCreatingCategory(true)
+                          setForm(f => ({ ...f, category: '' }))
+                          return
+                        }
+                        setIsCreatingCategory(false)
+                        setForm(f => ({ ...f, category: e.target.value }))
+                      }}
+                    >
+                      <option value="">Selecciona una categoría</option>
+                      {modalCategoryOptions.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                      <option value={NEW_CATEGORY_OPTION}>Nueva categoría...</option>
+                    </select>
+                    {isCreatingCategory && (
+                      <input
+                        className="input mt-2"
+                        value={form.category}
+                        onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                        placeholder="Escribe una nueva categoría"
+                      />
+                    )}
                   </div>
                   <div>
                     <label className="label">Estado</label>

@@ -1,12 +1,14 @@
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 
-from .models import Product, StockReception, Supplier
+from .filters import ProductFilter
+from .models import Order, Product, StockReception, Supplier
 from .permissions import ProductAccessPermission, ReceptionAccessPermission, SupplierAccessPermission
-from .serializers import ProductImageSerializer, ProductSerializer, StockReceptionSerializer, SupplierSerializer
+from .serializers import OrderSerializer, ProductImageSerializer, ProductSerializer, StockReceptionSerializer, SupplierSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -14,7 +16,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [ProductAccessPermission]
     search_fields = ('name', 'sku', 'description', 'category')
-    filterset_fields = ('is_active', 'category', 'supplier')
+    filterset_class = ProductFilter
     ordering_fields = ('name', 'price', 'created_at', 'stock')
     parser_classes = (MultiPartParser, FormParser)
     throttle_classes = [ScopedRateThrottle]
@@ -55,3 +57,11 @@ class StockReceptionViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixi
     def get_throttles(self):
         self.throttle_scope = 'inventory_write' if self.request.method != 'GET' else 'catalog'
         return super().get_throttles()
+
+
+class OrderViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Order.objects.select_related('product', 'customer').all()
+    serializer_class = OrderSerializer
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'catalog'

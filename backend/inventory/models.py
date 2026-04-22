@@ -2,6 +2,8 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models, transaction
 from django.db.models import F
+from django.utils import timezone
+import uuid
 
 
 class TimeStampedModel(models.Model):
@@ -90,3 +92,38 @@ class StockReception(TimeStampedModel):
 
 	def __str__(self):
 		return f'{self.product.sku} +{self.quantity}'
+
+
+def generate_order_number():
+	stamp = timezone.now().strftime('%Y%m%d')
+	suffix = uuid.uuid4().hex[:8].upper()
+	return f'ORD-{stamp}-{suffix}'
+
+
+class Order(TimeStampedModel):
+	class Status(models.TextChoices):
+		PAID = 'paid', 'Pagada'
+		FAILED = 'failed', 'Fallida'
+
+	product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='orders')
+	customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+	order_number = models.CharField(max_length=30, unique=True, default=generate_order_number, editable=False)
+
+	full_name = models.CharField(max_length=150)
+	phone = models.CharField(max_length=20)
+	street = models.CharField(max_length=255)
+	city = models.CharField(max_length=100)
+	state = models.CharField(max_length=100)
+	zip_code = models.CharField(max_length=20)
+	references = models.CharField(max_length=255, blank=True)
+
+	payment_method = models.CharField(max_length=30, default='credit_card')
+	card_last4 = models.CharField(max_length=4)
+	total_amount = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
+	status = models.CharField(max_length=20, choices=Status.choices, default=Status.PAID)
+
+	class Meta:
+		ordering = ('-created_at',)
+
+	def __str__(self):
+		return f'{self.order_number} - {self.product.sku}'

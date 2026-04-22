@@ -16,6 +16,8 @@ import PortalLayout     from './layouts/PortalLayout'
 import PortalHome       from './pages/portal/PortalHome'
 import Catalog          from './pages/portal/Catalog'
 import ProductPublic    from './pages/portal/ProductPublic'
+import Checkout         from './pages/portal/Checkout'
+import CheckoutSuccess  from './pages/portal/CheckoutSuccess'
 import PortalLogin      from './pages/portal/PortalLogin'
 import PortalRegister   from './pages/portal/PortalRegister'
 import PortalOAuthCallback from './pages/portal/PortalOAuthCallback'
@@ -43,7 +45,7 @@ export default function App() {
       <Route
         path="/intranet"
         element={
-          <RequireAuth>
+          <RequireAuth roles={['admin','operator']} >
             <IntranetLayout />
           </RequireAuth>
         }
@@ -74,6 +76,8 @@ export default function App() {
         <Route index element={<PortalHome />} />
         <Route path="catalog"      element={<Catalog />} />
         <Route path="catalog/:id"  element={<ProductPublic />} />
+        <Route path="checkout"     element={<Checkout />} />
+        <Route path="checkout/success" element={<CheckoutSuccess />} />
       </Route>
 
       {/* ─── API Documentation ──────────────────────────────────── */}

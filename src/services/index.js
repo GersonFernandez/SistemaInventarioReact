@@ -64,3 +64,9 @@ export const catalogService = {
   list: (params) => api.get('/products', { params }),
   get:  (id)     => api.get(`/products/${id}`),
 }
+
+// ─── Orders (Portal Checkout) ───────────────────────────────────────────────
+
+export const orderService = {
+  create: (data) => api.post('/orders', data),
+}

@@ -8,7 +8,7 @@ export default function PortalLogin() {
   const { login } = useAuth()
   const navigate  = useNavigate()
   const location  = useLocation()
-  const from      = location.state?.from?.pathname || '/portal/catalog'
+  const from      = location.state?.from?.pathname || '/portal'
   const [form, setForm]     = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState(false)

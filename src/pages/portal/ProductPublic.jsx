@@ -125,6 +125,13 @@ export default function ProductPublic() {
           </div>
 
           <div className="flex gap-3">
+            <Link
+              to={`/portal/checkout?product=${product.id}`}
+              state={{ product }}
+              className="btn-portal flex-1 justify-center rounded-xl"
+            >
+              Pagar ahora
+            </Link>
             <Link to="/portal/catalog" className="btn flex-1 justify-center border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl">
               ← Volver al catálogo
             </Link>
