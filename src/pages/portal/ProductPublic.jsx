@@ -120,7 +120,7 @@ export default function ProductPublic() {
           {/* Info box */}
           <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
             <p className="text-sm text-blue-700">
-              ℹ️ Este es un portal de <strong>consulta de catálogo</strong>. Para realizar pedidos, contacta directamente con nuestro equipo de ventas.
+              ℹ️ Este es un portal de <strong>consulta de catálogo</strong>. Para cualquier duda, contacta directamente con nuestro equipo de ventas.
             </p>
           </div>
 
