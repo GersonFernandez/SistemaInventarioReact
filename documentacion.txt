@@ -80,3 +80,9 @@ También hay otros dos usuarios de demostración:
 
 Operador: operador@empresa.com / Operador1234!
 Cliente Demo: cliente@demo.com / Cliente1234!
+
+
+Superusuario: admin@local.com / Admin123!
+Rol admin: admin.rol@empresa.com / AdminRol1234!
+Rol operador: operador.rol@empresa.com / OperadorRol1234!
+Rol viewer: viewer.rol@empresa.com / ViewerRol1234!

@@ -9,3 +9,4 @@ Pillow==12.2.0
 django-storages==1.14.6
 boto3==1.42.92
 bleach==6.3.0
+psycopg2-binary==2.9.9
