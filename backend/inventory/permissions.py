@@ -16,6 +16,14 @@ class SupplierAccessPermission(BasePermission):
         return bool(user and user.is_authenticated and user.scope == 'internal' and user.role in {'admin', 'operador'})
 
 
+class CategoryAccessPermission(BasePermission):
+    def has_permission(self, request, view):
+        user = request.user
+        if request.method in SAFE_METHODS:
+            return bool(user and user.is_authenticated and user.scope == 'internal')
+        return bool(user and user.is_authenticated and user.scope == 'internal' and user.role in {'admin', 'operador'})
+
+
 class ReceptionAccessPermission(BasePermission):
     def has_permission(self, request, view):
         user = request.user

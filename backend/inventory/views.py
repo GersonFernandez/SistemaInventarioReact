@@ -1,14 +1,15 @@
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 
 from .filters import ProductFilter
-from .models import Order, Product, StockReception, Supplier
-from .permissions import ProductAccessPermission, ReceptionAccessPermission, SupplierAccessPermission
-from .serializers import OrderSerializer, ProductImageSerializer, ProductSerializer, StockReceptionSerializer, SupplierSerializer
+from .models import Category, Order, Product, StockReception, Supplier
+from .permissions import CategoryAccessPermission, ProductAccessPermission, ReceptionAccessPermission, SupplierAccessPermission
+from .serializers import CategorySerializer, OrderSerializer, ProductImageSerializer, ProductSerializer, StockReceptionSerializer, SupplierSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -43,6 +44,32 @@ class SupplierViewSet(viewsets.ModelViewSet):
     ordering_fields = ('name', 'created_at')
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'inventory_write'
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [CategoryAccessPermission]
+    search_fields = ('name',)
+    filterset_fields = ('is_active',)
+    ordering_fields = ('name', 'created_at')
+    throttle_classes = [ScopedRateThrottle]
+
+    def get_throttles(self):
+        self.throttle_scope = 'catalog' if self.request.method == 'GET' else 'inventory_write'
+        return super().get_throttles()
+
+    def perform_update(self, serializer):
+        previous_name = serializer.instance.name
+        category = serializer.save()
+        if previous_name != category.name:
+            Product.objects.filter(category=previous_name).update(category=category.name)
+
+    def perform_destroy(self, instance):
+        linked_products = Product.objects.filter(category=instance.name).count()
+        if linked_products > 0:
+            raise ValidationError({'detail': 'No se puede eliminar una categoría con productos asociados.'})
+        instance.delete()
 
 
 class StockReceptionViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):

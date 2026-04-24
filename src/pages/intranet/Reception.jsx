@@ -49,17 +49,22 @@ export default function Reception() {
     setSaving(true)
     try {
       const { data } = await receptionService.create({
-        ...form,
+        batch: form.batch,
+        notes: form.notes,
         quantity: qty,
-        product_id: parseInt(form.product_id),
-        supplier_id: form.supplier_id ? parseInt(form.supplier_id) : null,
+        product: parseInt(form.product_id),
+        supplier: form.supplier_id ? parseInt(form.supplier_id) : null,
       })
       setReceptions(prev => [data, ...prev])
       toast.success(`✅ Se registraron ${qty} unidades en inventario`)
       setForm(EMPTY_FORM)
       setShowModal(false)
     } catch (err) {
-      toast.error(err?.response?.data?.detail || 'Error al registrar recepción')
+      const payload = err?.response?.data
+      const firstFieldError = payload && typeof payload === 'object'
+        ? Object.values(payload).flat().find(Boolean)
+        : null
+      toast.error(firstFieldError || payload?.detail || 'Error al registrar recepción')
     } finally {
       setSaving(false)
     }

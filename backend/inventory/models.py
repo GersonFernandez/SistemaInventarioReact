@@ -14,6 +14,17 @@ class TimeStampedModel(models.Model):
 		abstract = True
 
 
+class Category(TimeStampedModel):
+	name = models.CharField(max_length=100, unique=True)
+	is_active = models.BooleanField(default=True)
+
+	class Meta:
+		ordering = ('name',)
+
+	def __str__(self):
+		return self.name
+
+
 class Supplier(TimeStampedModel):
 	name = models.CharField(max_length=150)
 	rfc = models.CharField(

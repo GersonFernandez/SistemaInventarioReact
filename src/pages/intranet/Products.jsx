@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { productService } from '../../services'
+import { categoryService, productService } from '../../services'
 import { LoadingScreen, EmptyState, ConfirmDialog, Pagination, StatusBadge } from '../../components/ui/Shared'
 import { useAuth } from '../../context/AuthContext.jsx'
 
@@ -53,13 +53,12 @@ export default function Products() {
 
   async function loadCategories() {
     try {
-      const { data } = await productService.list({ page_size: 1000, ordering: 'category' })
+      const { data } = await categoryService.list({ page_size: 1000, ordering: 'name', is_active: true })
       const results = data.results || data
-      const options = Array.from(new Set(
-        results
-          .map(product => product.category?.trim())
-          .filter(Boolean)
-      )).sort((left, right) => left.localeCompare(right))
+      const options = results
+        .map(categoryItem => categoryItem.name?.trim())
+        .filter(Boolean)
+        .sort((left, right) => left.localeCompare(right))
       setCategories(options)
     } catch {
       const fallbackOptions = Array.from(new Set(

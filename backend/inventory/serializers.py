@@ -6,7 +6,7 @@ from rest_framework import serializers
 from accounts.api_keys import get_api_key_from_request, is_valid_api_key
 from accounts.models import User
 
-from .models import Order, Product, StockReception, Supplier
+from .models import Category, Order, Product, StockReception, Supplier
 
 
 ALLOWED_IMAGE_TYPES = {'image/jpeg', 'image/png', 'image/webp'}
@@ -15,6 +15,21 @@ MAX_IMAGE_SIZE = 5 * 1024 * 1024
 
 def sanitize_text(value):
     return bleach.clean(value or '', strip=True)
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    product_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = ('id', 'name', 'is_active', 'product_count', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'product_count', 'created_at', 'updated_at')
+
+    def get_product_count(self, obj):
+        return Product.objects.filter(category=obj.name).count()
+
+    def validate_name(self, value):
+        return sanitize_text(value)
 
 
 class SupplierSerializer(serializers.ModelSerializer):
@@ -58,7 +73,10 @@ class ProductSerializer(serializers.ModelSerializer):
         return sanitize_text(value)
 
     def validate_category(self, value):
-        return sanitize_text(value)
+        cleaned = sanitize_text(value)
+        if cleaned:
+            Category.objects.get_or_create(name=cleaned, defaults={'is_active': True})
+        return cleaned
 
     def validate_image(self, value):
         if not value:

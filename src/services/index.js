@@ -29,6 +29,14 @@ export const supplierService = {
   remove: (id)        => api.delete(`/suppliers/${id}`),
 }
 
+export const categoryService = {
+  list:   (params)    => api.get('/categories', { params }),
+  get:    (id)        => api.get(`/categories/${id}`),
+  create: (data)      => api.post('/categories', data),
+  update: (id, data)  => api.put(`/categories/${id}`, data),
+  remove: (id)        => api.delete(`/categories/${id}`),
+}
+
 // ─── Stock Reception ─────────────────────────────────────────────────────────
 
 export const receptionService = {

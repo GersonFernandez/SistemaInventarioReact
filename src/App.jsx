@@ -7,6 +7,7 @@ import Dashboard        from './pages/intranet/Dashboard'
 import Products         from './pages/intranet/Products'
 import ProductDetail    from './pages/intranet/ProductDetail'
 import Suppliers        from './pages/intranet/Suppliers'
+import Categories       from './pages/intranet/Categories'
 import Reception        from './pages/intranet/Reception'
 import Users            from './pages/intranet/Users'
 import IntranetLogin    from './pages/intranet/IntranetLogin'
@@ -54,6 +55,7 @@ export default function App() {
         <Route path="dashboard"  element={<Dashboard />} />
         <Route path="products"   element={<Products />} />
         <Route path="products/:id" element={<ProductDetail />} />
+        <Route path="categories" element={<Categories />} />
         <Route path="suppliers"  element={<Suppliers />} />
         <Route path="reception"  element={<Reception />} />
         <Route
