@@ -56,7 +56,8 @@ Cómo levantar
 Backend
 
 cd C:/Projecto/SistemaInventarioReact/backend
-python.exe manage.py runserver 8000
+python.exe -m pip install -r requirements.txt
+py -3.12 manage.py runserver 8000
 Frontend
 
 cd C:/Projecto/SistemaInventarioReact
