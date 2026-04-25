@@ -30,7 +30,7 @@ export default function App() {
   return (
     <Routes>
       {/* Root redirect */}
-      <Route path="/" element={<Navigate to="/intranet/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/portal" replace />} />
 
       {/* ─── Intranet Login ─────────────────────────────────────── */}
       <Route
