@@ -120,11 +120,18 @@ export default function ProductPublic() {
           {/* Info box */}
           <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
             <p className="text-sm text-blue-700">
-              ℹ️ Este es un portal de <strong>consulta de catálogo</strong>. Para realizar pedidos, contacta directamente con nuestro equipo de ventas.
+              ℹ️ Este es un portal de <strong>consulta de catálogo</strong>. Para cualquier duda, contacta directamente con nuestro equipo de ventas.
             </p>
           </div>
 
           <div className="flex gap-3">
+            <Link
+              to={`/portal/checkout?product=${product.id}`}
+              state={{ product }}
+              className="btn-portal flex-1 justify-center rounded-xl"
+            >
+              Pagar ahora
+            </Link>
             <Link to="/portal/catalog" className="btn flex-1 justify-center border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl">
               ← Volver al catálogo
             </Link>

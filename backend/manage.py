@@ -7,6 +7,17 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    
+    # Wait for debugger client if debugpy is available and runserver is called
+    if 'runserver' in sys.argv:
+        try:
+            import debugpy
+            debugpy.wait_for_client()
+        except ImportError:
+            pass  # debugpy not installed, continue normally
+        except Exception:
+            pass  # If wait fails, continue anyway
+    
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

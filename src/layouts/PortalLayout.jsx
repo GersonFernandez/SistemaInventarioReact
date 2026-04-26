@@ -25,8 +25,8 @@ export default function PortalLayout() {
 
             {/* Logo */}
             <Link to="/portal" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">SI</div>
-              <span className="font-bold text-slate-800 text-lg">TiendaInventario</span>
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">T</div>
+              <span className="font-bold text-slate-800 text-lg">Tienda</span>
             </Link>
 
             {/* Desktop nav */}

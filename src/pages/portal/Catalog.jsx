@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { catalogService } from '../../services'
+import { catalogService, categoryService } from '../../services'
 
-const CATEGORIES = ['Todas', 'Electrónica', 'Periféricos', 'Almacenamiento', 'Cables', 'Accesorios']
+const CATEGORIES = ['Todas']
 const SORT_OPTIONS = [
   { value: 'name', label: 'Nombre A–Z' },
   { value: '-name', label: 'Nombre Z–A' },
@@ -56,6 +56,7 @@ function ProductCard({ product }) {
 export default function Catalog() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts]   = useState([])
+  const [categories, setCategories] = useState(CATEGORIES)
   const [loading, setLoading]     = useState(true)
   const [page, setPage]           = useState(1)
   const [totalPages, setTotal]    = useState(1)
@@ -71,7 +72,7 @@ export default function Catalog() {
     setLoading(true)
     try {
       const params = { page: pg, page_size: 12, is_active: true }
-      if (search)   params.search = search
+      if (search) params.search = search
       if (category && category !== 'Todas') params.category = category
       if (ordering) params.ordering = ordering
       if (minPrice) params.price__gte = minPrice
@@ -90,8 +91,20 @@ export default function Catalog() {
     }
   }, [search, category, ordering, minPrice, maxPrice])
 
+  const loadCategories = useCallback(async () => {
+    try {
+      const { data } = await categoryService.list({ page_size: 1000, is_active: true, ordering: 'name' })
+      const results = data.results || data
+      const dynamicCategories = results.map(item => item.name).filter(Boolean)
+      setCategories(['Todas', ...dynamicCategories])
+    } catch {
+      setCategories(CATEGORIES)
+    }
+  }, [])
+
   useEffect(() => { setPage(1) }, [search, category, ordering, minPrice, maxPrice])
   useEffect(() => { load(page) }, [page, load])
+  useEffect(() => { loadCategories() }, [loadCategories])
 
   function setParam(key, value) {
     const next = new URLSearchParams(searchParams)
@@ -130,7 +143,7 @@ export default function Catalog() {
               <div className="mb-5">
                 <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-3">Categoría</h3>
                 <div className="space-y-1.5">
-                  {CATEGORIES.map(cat => (
+                  {categories.map(cat => (
                     <button
                       key={cat}
                       onClick={() => setParam('category', cat === 'Todas' ? '' : cat)}

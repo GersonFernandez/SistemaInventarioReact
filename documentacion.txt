@@ -55,11 +55,12 @@ Cómo levantar
 
 Backend
 
-cd C:/Projecto/SistemaInventarioFronted/backend
-python.exe manage.py runserver 8000
+cd C:/Projecto/SistemaInventarioReact/backend
+python.exe -m pip install -r requirements.txt
+py -3.12 manage.py runserver 8000
 Frontend
 
-cd C:/Projecto/SistemaInventarioFronted
+cd C:/Projecto/SistemaInventarioReact
 npm install
 npm run dev
 Notas importantes
@@ -80,3 +81,9 @@ También hay otros dos usuarios de demostración:
 
 Operador: operador@empresa.com / Operador1234!
 Cliente Demo: cliente@demo.com / Cliente1234!
+
+
+Superusuario: admin@local.com / Admin123!
+Rol admin: admin.rol@empresa.com / AdminRol1234!
+Rol operador: operador.rol@empresa.com / OperadorRol1234!
+Rol viewer: viewer.rol@empresa.com / ViewerRol1234!

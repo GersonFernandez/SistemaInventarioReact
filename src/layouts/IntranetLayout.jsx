@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 const NAV_ITEMS = [
   { to: '/intranet/dashboard', icon: '📊', label: 'Dashboard' },
   { to: '/intranet/products',  icon: '📦', label: 'Productos' },
+  { to: '/intranet/categories', icon: '🗂️', label: 'Categorías' },
   { to: '/intranet/suppliers', icon: '🏭', label: 'Proveedores' },
   { to: '/intranet/reception', icon: '📥', label: 'Recepción' },
 ]

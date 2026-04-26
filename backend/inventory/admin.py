@@ -1,12 +1,19 @@
 from django.contrib import admin
 
-from .models import Product, StockReception, Supplier
+from .models import Category, Product, StockReception, Supplier
 
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ('name', 'contact_name', 'email', 'phone', 'is_active')
     search_fields = ('name', 'rfc', 'email', 'contact_name')
+    list_filter = ('is_active',)
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active')
+    search_fields = ('name',)
     list_filter = ('is_active',)
 
 

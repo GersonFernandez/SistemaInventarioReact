@@ -1,0 +1,76 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: inventario_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: inventario_db
+      POSTGRES_USER: inventario_user
+      POSTGRES_PASSWORD: inventario_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inventario_user -d inventario_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: inventario_backend
+    restart: unless-stopped
+    environment:
+      DB_ENGINE: postgres
+      POSTGRES_DB: inventario_db
+      POSTGRES_USER: inventario_user
+      POSTGRES_PASSWORD: inventario_pass
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      DJANGO_DEBUG: "true"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,backend"
+      DJANGO_CORS_ALLOWED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+      DJANGO_CSRF_TRUSTED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+      # Seeding control: true=semilla activa | false=sin datos
+      SEED_PRODUCTS: "true"
+      DJANGO_SUPERUSER_EMAIL: admin@local.com
+      DJANGO_SUPERUSER_PASSWORD: Admin123!
+      DJANGO_SUPERUSER_NAME: Admin Local
+      SEED_ADMIN_EMAIL: admin.rol@empresa.com
+      SEED_ADMIN_PASSWORD: AdminRol1234!
+      SEED_ADMIN_NAME: Usuario Admin
+      SEED_OPERATOR_EMAIL: operador.rol@empresa.com
+      SEED_OPERATOR_PASSWORD: OperadorRol1234!
+      SEED_OPERATOR_NAME: Usuario Operador
+      SEED_VIEWER_EMAIL: viewer.rol@empresa.com
+      SEED_VIEWER_PASSWORD: ViewerRol1234!
+      SEED_VIEWER_NAME: Usuario Viewer
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: inventario_frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
