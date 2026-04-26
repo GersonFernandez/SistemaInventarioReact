@@ -302,9 +302,30 @@ X-RateLimit-Reset: 1714000860`}
             La especificación completa OpenAPI 3.0 (generada automáticamente por Django REST Framework) está disponible en:
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <code className="bg-slate-700 px-4 py-2 rounded-lg text-blue-300 text-sm">/api/schema/</code>
-            <code className="bg-slate-700 px-4 py-2 rounded-lg text-blue-300 text-sm">/api/schema/swagger-ui/</code>
-            <code className="bg-slate-700 px-4 py-2 rounded-lg text-blue-300 text-sm">/api/schema/redoc/</code>
+            <a
+              href="http://localhost:8000/api/schema/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-blue-300 text-sm transition-colors"
+            >
+              /api/schema/
+            </a>
+            <a
+              href="http://localhost:8000/api/schema/swagger-ui/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-blue-300 text-sm transition-colors"
+            >
+              /api/schema/swagger-ui/ ↗
+            </a>
+            <a
+              href="http://localhost:8000/api/schema/redoc/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-blue-300 text-sm transition-colors"
+            >
+              /api/schema/redoc/ ↗
+            </a>
           </div>
         </div>
       </div>

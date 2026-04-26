@@ -19,7 +19,8 @@ Puerto: 5173
 Abre tu navegador en: http://localhost:5173
 Usa las credenciales anteriores para login
 API REST disponible en: http://localhost:8000/api/v1/
-Documentación Swagger: http://localhost:8000/api/schema/swagger/
+Documentación Swagger: http://localhost:8000/api/schema/swagger-ui/
+Documentación Redoc:   http://localhost:8000/api/schema/redoc/
 🎯 ARQUITECTURA ACTIVA
 ✅ Django REST Backend + React Frontend
 ✅ Autenticación JWT + OAuth2 PKCE

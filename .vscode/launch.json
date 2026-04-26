@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Django Backend (Debug)",
+      "type": "python",
+      "request": "attach",
+      "port": 5173,
+      "priorSetupSteps": [],
+      "django": true,
+      "justMyCode": false,
+      "console": "integratedTerminal",
+      "pathMapping": {
+        "/app": "${workspaceFolder}/backend"
+      }
+    }
+  ]
+}
