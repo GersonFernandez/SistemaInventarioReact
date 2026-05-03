@@ -14,6 +14,36 @@ const MAX_IMAGE_SIZE_MB = 5
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const NEW_CATEGORY_OPTION = '__new__'
 
+function buildProductPayload(form) {
+  return {
+    name: (form.name || '').trim(),
+    sku: (form.sku || '').trim(),
+    description: form.description || '',
+    price: parseFloat(form.price),
+    stock: parseInt(form.stock, 10) || 0,
+    category: (form.category || '').trim(),
+    is_active: !!form.is_active,
+  }
+}
+
+function getApiErrorMessage(err, fallback = 'Error al guardar producto') {
+  const data = err?.response?.data
+  if (!data) return fallback
+  if (typeof data === 'string') return data
+  if (data.detail) return data.detail
+
+  const firstKey = Object.keys(data)[0]
+  if (!firstKey) return fallback
+  const value = data[firstKey]
+  if (Array.isArray(value) && value.length > 0) {
+    return `${firstKey}: ${value[0]}`
+  }
+  if (typeof value === 'string') {
+    return `${firstKey}: ${value}`
+  }
+  return fallback
+}
+
 export default function Products() {
   const { hasRole } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -123,7 +153,7 @@ export default function Products() {
     setSaving(true)
     try {
       let saved
-      const payload = { ...form, price: parseFloat(form.price), stock: parseInt(form.stock) || 0 }
+      const payload = buildProductPayload(form)
       if (editing) {
         const { data } = await productService.update(editing.id, payload)
         saved = data
@@ -142,7 +172,7 @@ export default function Products() {
       }
       closeModal()
     } catch (err) {
-      toast.error(err?.response?.data?.detail || 'Error al guardar producto')
+      toast.error(getApiErrorMessage(err))
     } finally {
       setSaving(false)
     }

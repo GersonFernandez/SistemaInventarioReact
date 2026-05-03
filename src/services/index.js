@@ -6,16 +6,14 @@ export const productService = {
   list:   (params) => api.get('/products', { params }),
   get:    (id)     => api.get(`/products/${id}`),
   create: (data)   => api.post('/products', data),
-  update: (id, data) => api.put(`/products/${id}`, data),
+  update: (id, data) => api.patch(`/products/${id}`, data),
   remove: (id)     => api.delete(`/products/${id}`),
 
   /** Upload product image – multipart/form-data */
   uploadImage: (id, file) => {
     const form = new FormData()
     form.append('image', file)
-    return api.post(`/products/${id}/image`, form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
+    return api.post(`/products/${id}/image`, form)
   },
 }
 

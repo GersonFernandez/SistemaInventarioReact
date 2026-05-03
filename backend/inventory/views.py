@@ -1,7 +1,7 @@
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
-from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
@@ -19,7 +19,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'sku', 'description', 'category')
     filterset_class = ProductFilter
     ordering_fields = ('name', 'price', 'created_at', 'stock')
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (JSONParser, MultiPartParser, FormParser)
     throttle_classes = [ScopedRateThrottle]
 
     def get_throttles(self):

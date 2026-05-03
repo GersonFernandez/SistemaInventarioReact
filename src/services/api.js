@@ -6,16 +6,19 @@ const OAUTH_CLIENT_ID = import.meta.env.VITE_OAUTH_CLIENT_ID || ''
 
 const api = axios.create({
   baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
   withCredentials: false,
 })
 
-// --- Request interceptor: attach token if present ---
+// --- Request interceptor: attach token and set Content-Type if not FormData ---
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token')
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
+    }
+    // Set JSON content type only when body is NOT FormData (multipart handles its own boundary)
+    if (!(config.data instanceof FormData)) {
+      config.headers['Content-Type'] = 'application/json'
     }
     return config
   },
